@@ -34,6 +34,7 @@ describe('Topics and Skills Dashboard backend API service', () => {
     '/topics_and_skills_dashboard/data');
   const SKILLS_DASHBOARD_DATA_URL = '/skills_dashboard/data';
   const ASSIGNED_SKILL_DATA_URL = '/topics_and_skills_dashboard/<skill_id>';
+  const MERGE_SKILLS_URL = '/merge_skills_handler';
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -110,17 +111,17 @@ describe('Topics and Skills Dashboard backend API service', () => {
       fakeAsync(() => {
         let successHandler = jasmine.createSpy('success');
         let failHandler = jasmine.createSpy('fail');
-        topicsAndSkillsDashboardBackendApiService.fetchSkillsDashboardData(
-          null, 0, null).then(
+        topicsAndSkillsDashboardBackendApiService.fetchTopicAssignmentsForSkill(
+          'skillId1').then(
           successHandler, failHandler);
         let req = httpTestingController.expectOne(ASSIGNED_SKILL_DATA_URL);
         expect(req.request.method).toEqual('GET');
         req.flush('Error loading assigned skill data.', {
           status: 500
         });
+        flushMicrotasks();
         expect(successHandler).not.toHaveBeenCalled();
-        expect(failHandler).toHaveBeenCalledWith(
-          'Error loading assigned skill data.');
+        expect(failHandler).toHaveBeenCalled();
       })
     );
 
@@ -156,6 +157,42 @@ describe('Topics and Skills Dashboard backend API service', () => {
       expect(successHandler).toHaveBeenCalled();
       expect(failHandler).not.toHaveBeenCalled();
     })
+    );
+
+    it('should successfully merge skills in backend',
+      fakeAsync(() => {
+        let successHandler = jasmine.createSpy('success');
+        let failHandler = jasmine.createSpy('fail');
+        topicsAndSkillsDashboardBackendApiService.mergeSkills('skillId1', 'skillId2').then(
+          successHandler, failHandler);
+        let req = httpTestingController.expectOne(
+          MERGE_SKILLS_URL);
+        expect(req.request.method).toEqual('POST');
+        req.flush({});
+        expect(successHandler).toHaveBeenCalled();
+        expect(failHandler).not.toHaveBeenCalled();
+      })
+    );
+
+    it('should use fail handler if merging skills failed',
+      fakeAsync(() => {
+        let successHandler = jasmine.createSpy('success');
+        let failHandler = jasmine.createSpy('fail');
+        topicsAndSkillsDashboardBackendApiService.mergeSkills('skillId1', 'skillId2').then(
+          successHandler, failHandler);
+        let req = httpTestingController.expectOne(
+          MERGE_SKILLS_URL);
+        expect(req.request.method).toEqual('POST');
+
+        req.flush('Invalid request', {
+          status: 400,
+          statusText: 'Invalid Request'
+        });
+        flushMicrotasks();
+
+        expect(successHandler).not.toHaveBeenCalled();
+        expect(failHandler).toHaveBeenCalled();
+      })
     );
   });
 });
