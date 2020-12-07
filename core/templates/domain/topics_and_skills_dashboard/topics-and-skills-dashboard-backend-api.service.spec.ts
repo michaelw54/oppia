@@ -163,7 +163,8 @@ describe('Topics and Skills Dashboard backend API service', () => {
       fakeAsync(() => {
         let successHandler = jasmine.createSpy('success');
         let failHandler = jasmine.createSpy('fail');
-        topicsAndSkillsDashboardBackendApiService.mergeSkills('skillId1', 'skillId2').then(
+        topicsAndSkillsDashboardBackendApiService.mergeSkills(
+          'skillId1', 'skillId2').then(
           successHandler, failHandler);
         let req = httpTestingController.expectOne(
           MERGE_SKILLS_URL);
@@ -178,7 +179,8 @@ describe('Topics and Skills Dashboard backend API service', () => {
       fakeAsync(() => {
         let successHandler = jasmine.createSpy('success');
         let failHandler = jasmine.createSpy('fail');
-        topicsAndSkillsDashboardBackendApiService.mergeSkills('skillId1', 'skillId2').then(
+        topicsAndSkillsDashboardBackendApiService.mergeSkills(
+          'skillId1', 'skillId2').then(
           successHandler, failHandler);
         let req = httpTestingController.expectOne(
           MERGE_SKILLS_URL);
